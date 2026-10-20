@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Gửi Khánh Ngọc</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500;1,600&family=Be+Vietnam+Pro:wght@300;400;500&family=Dancing+Script:wght@500;600&display=swap">
+<style>
+/* Layout: lacquer (sơn mài) night, a Đông Sơn bronze drum turning behind a lotus, the letter on giấy dó paper. Single dark look by choice. */
+:root {
+  --lacquer: #170b09;
+  --lacquer-2: #26130f;
+  --cinnabar: #b3322a;
+  --gold: #d4a64a;
+  --gold-soft: #ecd29a;
+  --lotus: #ec97ad;
+  --paper: #f3e8d4;
+  --ink: #2e1d16;
+  --ink-soft: #7a5f4c;
+  --muted: #bfa88a;
+  --display: "Cormorant Garamond", "Times New Roman", serif;
+  --body: "Be Vietnam Pro", system-ui, sans-serif;
+  --script: "Dancing Script", "Brush Script MT", cursive;
+  color-scheme: dark;
+}
+html { background: var(--lacquer); }
+body {
+  background:
+    radial-gradient(90% 40% at 50% 0%, rgba(179, 50, 42, .32), transparent 70%),
+    radial-gradient(80% 35% at 50% 100%, rgba(212, 166, 74, .10), transparent 70%),
+    var(--lacquer);
+  color: var(--gold-soft);
+  font-family: var(--body);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.75;
+  min-height: 100%;
+}
+h1, h2 { font-family: var(--display); font-weight: 500; text-wrap: balance; margin: 0; }
+.gold-text {
+  background: linear-gradient(180deg, #f8e6b4 0%, #d9ac52 55%, #a7782b 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.eyebrow {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  font-size: 12px; font-weight: 500; letter-spacing: .26em; text-transform: uppercase; color: var(--gold);
+}
+.eyebrow::before, .eyebrow::after { content: ""; width: 28px; height: 1px; background: var(--gold); opacity: .6; }
+.lotus { display: block; aspect-ratio: 240 / 140; max-width: 100%; }
+.divider { position: relative; height: 1px; background: linear-gradient(90deg, transparent, rgba(212, 166, 74, .7), transparent); }
+.divider::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px;
+  background: var(--lacquer); border: 1px solid var(--gold); transform: translate(-50%, -50%) rotate(45deg);
+}
+
+#petals { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+
+/* Cover */
+.cover {
+  position: fixed; inset: 0; z-index: 20; overflow: hidden;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(80% 55% at 50% 45%, rgba(179, 50, 42, .38), transparent 70%),
+    var(--lacquer);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  transition: opacity .9s ease, visibility .9s;
+}
+.cover.gone { opacity: 0; visibility: hidden; }
+.cover .drum {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(96vw, 620px); aspect-ratio: 1; opacity: .22;
+}
+.cover-inner { position: relative; display: grid; justify-items: center; gap: 14px; text-align: center; }
+.cover .lotus { width: 132px; }
+.cover h1 { font-style: italic; font-weight: 500; line-height: 1; }
+.cover h1 small { display: block; font-size: 26px; color: var(--muted); font-style: italic; margin-bottom: 6px; }
+.cover h1 .gold-text { font-size: clamp(52px, 14vw, 88px); padding: 0 .08em; }
+.cover p { margin: 0; color: var(--muted); }
+.cover .hint { font-size: 13px; opacity: .8; }
+
+.btn-gold {
+  font: 500 16px var(--body); letter-spacing: .02em; color: var(--lacquer);
+  background: linear-gradient(180deg, #f2da9c, #c8953a);
+  border: 0; border-radius: 999px; padding: 15px 32px; cursor: pointer;
+  box-shadow: 0 12px 34px rgba(212, 166, 74, .28), inset 0 1px 0 rgba(255, 255, 255, .55);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(212, 166, 74, .36), inset 0 1px 0 rgba(255, 255, 255, .55); }
+.btn-gold:active { transform: scale(.97); }
+.btn-gold:focus-visible, #music-btn:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 4px; }
+
+#music-btn {
+  position: fixed; z-index: 10;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--lacquer-2); color: var(--gold); border: 1px solid var(--gold);
+  font-size: 20px; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 0, 0, .4);
+}
+#music-btn[aria-pressed="false"] { color: var(--muted); border-color: rgba(191, 168, 138, .4); text-decoration: line-through; }
+
+/* Page */
+main {
+  position: relative; z-index: 1;
+  max-width: 620px; margin: 0 auto;
+  padding-block: 32px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 64px;
+}
+.hero { display: grid; justify-items: center; gap: 8px; text-align: center; }
+.emblem { position: relative; width: min(86vw, 380px); max-width: 100%; aspect-ratio: 1; margin-bottom: -28px; }
+.emblem .drum { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .5; }
+.emblem .lotus {
+  position: absolute; left: 50%; top: 50%; width: 60%; transform: translate(-50%, -46%);
+  filter: drop-shadow(0 12px 30px rgba(236, 151, 173, .3));
+}
+.hero .occasion { font-family: var(--display); font-style: italic; font-size: 24px; color: var(--muted); }
+.hero .family { font-family: var(--display); font-size: 20px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold); margin-top: 14px; }
+.hero h1 { font-style: italic; font-size: clamp(60px, 17vw, 116px); line-height: .98; padding: 0 .08em; }
+.hero p { margin: 10px 0 0; max-width: 32ch; color: var(--muted); }
+
+.name { display: grid; gap: 22px; }
+.name .pair { display: grid; grid-template-columns: 1fr 1px 1fr; align-items: start; }
+.name .rule { align-self: stretch; background: linear-gradient(transparent, rgba(212, 166, 74, .6), transparent); }
+.name .word { display: grid; justify-items: center; text-align: center; gap: 6px; padding: 0 14px; min-width: 0; }
+.name b { font-family: var(--display); font-style: italic; font-weight: 600; font-size: 44px; line-height: 1.1; }
+.name small { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+.facts { display: grid; gap: 22px; text-align: center; }
+.facts h2 { font-size: 36px; font-style: italic; }
+.facts .sub { margin: -14px 0 0; color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; text-align: left; }
+.tile {
+  border: 1px solid rgba(212, 166, 74, .32); border-radius: 2px;
+  background: linear-gradient(160deg, var(--lacquer-2), var(--lacquer));
+  padding: 18px 18px 16px; display: grid; gap: 4px;
+}
+.tile .k { font-size: 11px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+.tile .v { font-family: var(--display); font-size: 32px; font-weight: 600; line-height: 1.15; color: var(--gold-soft); font-variant-numeric: lining-nums tabular-nums; }
+.tile .v.pink { color: var(--lotus); }
+.tile .n { font-size: 13px; line-height: 1.5; color: var(--muted); }
+
+.paper {
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, .5), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(176, 140, 90, .18), transparent 45%),
+    var(--paper);
+  border-radius: 2px;
+  padding: 44px 32px 40px;
+  box-shadow:
+    inset 0 0 0 1px rgba(179, 50, 42, .45),
+    inset 0 0 0 7px var(--paper),
+    inset 0 0 0 8px rgba(179, 50, 42, .3),
+    0 30px 70px rgba(0, 0, 0, .5);
+  display: grid;
+}
+.paper .lotus { width: 76px; justify-self: center; margin-bottom: 10px; }
+.paper .eyebrow { color: var(--cinnabar); margin-bottom: 18px; }
+.paper .eyebrow::before, .paper .eyebrow::after { background: var(--cinnabar); }
+.paper h2 { font-family: var(--script); font-weight: 600; font-size: 40px; color: var(--cinnabar); margin-bottom: 14px; }
+.paper p { margin: 0 0 16px; font-size: 16.5px; line-height: 1.9; font-weight: 400; max-width: 62ch; }
+.sign { justify-self: end; text-align: right; margin-top: 8px; }
+.sign span { display: block; font-family: var(--script); font-size: 42px; line-height: 1.1; color: var(--cinnabar); }
+.sign small { font-size: 13px; color: var(--ink-soft); font-style: italic; }
+
+.gift { display: grid; justify-items: center; gap: 16px; text-align: center; }
+#love { font-family: var(--script); font-size: 40px; line-height: 1.3; min-height: 1.3em; margin: 0; }
+
+footer { display: grid; justify-items: center; gap: 8px; text-align: center; color: var(--muted); font-size: 13px; letter-spacing: .06em; }
+footer .lotus { width: 56px; opacity: .85; }
+
+@media (max-width: 420px) {
+  .paper { padding: 36px 22px 32px; }
+  .name b { font-size: 38px; }
+  .tile .v { font-size: 27px; }
+}
+@media (prefers-reduced-motion: reduce) { .btn-gold, .cover { transition: none; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="petal-front" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#b8436a"/>
+      <stop offset=".55" stop-color="#ec97ad"/>
+      <stop offset="1" stop-color="#fde8ee"/>
+    </linearGradient>
+    <linearGradient id="petal-back" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#7f2747"/>
+      <stop offset="1" stop-color="#e48aa2"/>
+    </linearGradient>
+  </defs>
+  <symbol id="lotus" viewBox="-120 -118 240 140">
+    <path id="petal" d="M0 0 C-24 -30 -18 -80 0 -108 C18 -80 24 -30 0 0Z"/>
+    <ellipse cx="-56" cy="9" rx="48" ry="9" fill="#2f5a43"/>
+    <ellipse cx="56" cy="9" rx="48" ry="9" fill="#2f5a43"/>
+    <g stroke="#d4a64a" stroke-opacity=".55" stroke-width="1">
+      <use href="#petal" transform="rotate(-62) scale(.72)" fill="url(#petal-back)"/>
+      <use href="#petal" transform="rotate(62) scale(.72)" fill="url(#petal-back)"/>
+      <use href="#petal" transform="rotate(-38) scale(.88)" fill="url(#petal-back)"/>
+      <use href="#petal" transform="rotate(38) scale(.88)" fill="url(#petal-back)"/>
+      <use href="#petal" transform="rotate(-16) scale(.96)" fill="url(#petal-front)"/>
+      <use href="#petal" transform="rotate(16) scale(.96)" fill="url(#petal-front)"/>
+      <use href="#petal" transform="scale(1.04)" fill="url(#petal-front)"/>
+    </g>
+    <path d="M-96 16 Q0 26 96 16" fill="none" stroke="#d4a64a" stroke-opacity=".6" stroke-width="1.2"/>
+  </symbol>
+</svg>
+
+<canvas id="petals" aria-hidden="true"></canvas>
+
+<div class="cover" id="cover">
+  <canvas class="drum" aria-hidden="true"></canvas>
+  <div class="cover-inner">
+    <svg class="lotus" aria-hidden="true"><use href="#lotus" width="100%" height="100%"/></svg>
+    <div class="eyebrow">20 tháng 10</div>
+    <h1><small>Gửi</small><span class="gold-text">Khánh Ngọc</span></h1>
+    <p>Có một lá thư anh viết riêng cho em</p>
+    <button id="open-btn" class="btn-gold" type="button">Mở thư ♪</button>
+    <p class="hint">Em bật loa lên để nghe nhạc nhé</p>
+  </div>
+</div>
+<button id="music-btn" type="button" aria-pressed="true" aria-label="Bật hoặc tắt nhạc" hidden>♪</button>
+
+<main>
+  <header class="hero">
+    <div class="emblem">
+      <canvas class="drum" aria-hidden="true"></canvas>
+      <svg class="lotus" aria-hidden="true"><use href="#lotus" width="100%" height="100%"/></svg>
+    </div>
+    <div class="eyebrow">20 tháng 10 · 2026</div>
+    <div class="occasion">Ngày Phụ nữ Việt Nam</div>
+    <div class="family">Phạm Thị</div>
+    <h1 class="gold-text">Khánh Ngọc</h1>
+    <p>Trang nhỏ này anh làm riêng cho em, người phụ nữ anh thương nhất.</p>
+  </header>
+
+  <div class="divider"></div>
+
+  <section class="name" aria-label="Ý nghĩa tên em">
+    <div class="eyebrow">Ý nghĩa tên em</div>
+    <div class="pair">
+      <div class="word"><b class="gold-text">Khánh</b><small>niềm vui, điều đáng mừng</small></div>
+      <div class="rule"></div>
+      <div class="word"><b class="gold-text">Ngọc</b><small>viên ngọc quý, trong trẻo và bền lâu</small></div>
+    </div>
+  </section>
+
+  <section class="facts">
+    <div class="eyebrow">Về em</div>
+    <h2 class="gold-text">Viên ngọc của anh</h2>
+    <p class="sub">sinh ngày 16 tháng 3 năm 1999</p>
+    <div class="grid">
+      <div class="tile"><span class="k">Cung</span><span class="v">Song Ngư</span><span class="n">dịu dàng, giàu tình cảm</span></div>
+      <div class="tile"><span class="k">Tuổi</span><span class="v">Kỷ Mão</span><span class="n">cô mèo nhỏ năm 1999</span></div>
+      <div class="tile"><span class="k">Em đã đến với đời</span><span class="v pink" id="days">—</span><span class="n">ngày, ngày nào cũng đáng giá</span></div>
+      <div class="tile"><span class="k">Sinh nhật tới</span><span class="v" id="countdown">—</span><span class="n" id="countdown-note">ngày nữa</span></div>
+    </div>
+  </section>
+
+  <section class="paper" aria-label="Thư anh gửi em">
+    <svg class="lotus" aria-hidden="true"><use href="#lotus" width="100%" height="100%"/></svg>
+    <div class="eyebrow">Thư anh gửi</div>
+    <h2>Ngọc của anh,</h2>
+    <p>Hôm nay là 20/10. Anh muốn dành riêng một trang nhỏ để nói những điều ngày thường anh hay quên nói.</p>
+    <p>Cảm ơn em đã luôn ở bên anh, lo cho nhà mình chu đáo, và kiên nhẫn với anh cả những lúc anh bận rộn hay vụng về. Có em, nhà mình lúc nào cũng ấm. Anh biết mình may mắn thế nào.</p>
+    <p>Chúc em luôn khỏe mạnh, xinh đẹp, cười nhiều hơn và bớt lo nghĩ. Chuyện gì khó, cứ để hai đứa mình cùng làm.</p>
+    <p>Anh yêu em.</p>
+    <div class="sign"><span>Thanh</span><small>chồng của em</small></div>
+  </section>
+
+  <section class="gift">
+    <button id="gift-btn" class="btn-gold" type="button">Chạm để nhận hoa</button>
+    <p id="love" class="gold-text" aria-live="polite"></p>
+  </section>
+
+  <footer>
+    <svg class="lotus" aria-hidden="true"><use href="#lotus" width="100%" height="100%"/></svg>
+    <span>20 · 10 · 2026 · từ anh Thanh, gửi Khánh Ngọc</span>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const DAY = 86400000;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const birth = new Date(1999, 2, 16);
+  let next = new Date(today.getFullYear(), 2, 16);
+  if (next < today) next = new Date(today.getFullYear() + 1, 2, 16);
+  const fmt = n => n.toLocaleString('vi-VN');
+  document.getElementById('days').textContent = fmt(Math.round((today - birth) / DAY));
+  const left = Math.round((next - today) / DAY);
+  document.getElementById('countdown').textContent = left === 0 ? 'Hôm nay!' : fmt(left);
+  document.getElementById('countdown-note').textContent =
+    left === 0 ? 'Chúc mừng sinh nhật em' : `ngày nữa em tròn ${next.getFullYear() - 1999} tuổi`;
+
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const dpr = () => devicePixelRatio || 1;
+
+  // Đông Sơn bronze drum face: star at the center, rings of patterns, flying Lạc birds.
+  const renderDrum = size => {
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const g = c.getContext('2d'), R = size / 2, TAU = Math.PI * 2;
+    g.translate(R, R);
+    g.strokeStyle = g.fillStyle = '#d4a64a';
+    g.lineWidth = Math.max(1, size / 420);
+    const around = (n, draw) => { for (let i = 0; i < n; i++) { g.save(); g.rotate(i * TAU / n); draw(); g.restore(); } };
+    const line = (x1, y1, x2, y2) => { g.beginPath(); g.moveTo(x1 * R, y1 * R); g.lineTo(x2 * R, y2 * R); g.stroke(); };
+    [.98, .92, .86, .71, .64, .48, .41, .32, .25].forEach(r => { g.beginPath(); g.arc(0, 0, r * R, 0, TAU); g.stroke(); });
+    around(14, () => { g.beginPath(); g.moveTo(.25 * R, 0); g.lineTo(.05 * R, .028 * R); g.lineTo(.05 * R, -.028 * R); g.fill(); });
+    g.beginPath(); g.arc(0, 0, .05 * R, 0, TAU); g.fill();
+    around(56, () => line(.25, 0, .32, .02));
+    around(64, () => line(.41, 0, .48, 0));
+    around(144, () => line(.92, 0, .98, 0));
+    around(32, () => {
+      g.beginPath(); g.arc(.785 * R, 0, .048 * R, 0, TAU); g.stroke();
+      g.beginPath(); g.arc(.785 * R, 0, .014 * R, 0, TAU); g.fill();
+    });
+    around(6, () => {
+      const L = .075 * R;
+      g.translate(.56 * R, 0); g.rotate(Math.PI / 2);
+      g.beginPath(); g.ellipse(0, 0, L * .45, L * .14, 0, 0, TAU); g.fill();
+      g.beginPath();
+      g.moveTo(L * .45, 0); g.lineTo(L * 1.25, L * .06);
+      g.moveTo(-L * .4, 0); g.lineTo(-L, -L * .3);
+      g.moveTo(-L * .4, 0); g.lineTo(-L, L * .3);
+      g.moveTo(0, 0); g.lineTo(-L * .25, -L * .6);
+      g.moveTo(L * .3, -L * .08); g.lineTo(L * .05, -L * .45);
+      g.stroke();
+    });
+    return c;
+  };
+  const drums = [...document.querySelectorAll('canvas.drum')].map(canvas => ({ canvas, ctx: canvas.getContext('2d') }));
+  const sizeDrums = () => drums.forEach(d => {
+    const size = Math.round(d.canvas.getBoundingClientRect().width * dpr());
+    if (!size) return;
+    d.canvas.width = d.canvas.height = size;
+    d.face = renderDrum(size);
+  });
+  const drawDrums = angle => drums.forEach(({ canvas, ctx, face }) => {
+    if (!face) return;
+    const s = canvas.width;
+    ctx.clearRect(0, 0, s, s);
+    ctx.save(); ctx.translate(s / 2, s / 2); ctx.rotate(angle); ctx.drawImage(face, -s / 2, -s / 2); ctx.restore();
+  });
+
+  const canvas = document.getElementById('petals');
+  const ctx = canvas.getContext('2d');
+  const colors = ['#ec97ad', '#f6c3d0', '#d96b8c', '#fde8ee', '#d4a64a'];
+  let w, h, petals = [];
+  const sizePetals = () => {
+    w = innerWidth; h = innerHeight;
+    canvas.width = w * dpr(); canvas.height = h * dpr();
+    ctx.setTransform(dpr(), 0, 0, dpr(), 0, 0);
+  };
+  const petal = (x, y, burst) => ({
+    x, y, r: 6 + Math.random() * 7,
+    vx: burst ? (Math.random() - .5) * 8 : (Math.random() - .5) * .5,
+    vy: burst ? -Math.random() * 9 - 2 : .35 + Math.random() * .7,
+    a: Math.random() * Math.PI * 2, va: (Math.random() - .5) * .04,
+    c: colors[Math.random() * colors.length | 0], burst
+  });
+  const drawPetals = () => {
+    ctx.clearRect(0, 0, w, h);
+    for (const p of petals) {
+      ctx.save();
+      ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.scale(Math.cos(p.a * 1.7), 1);
+      ctx.globalAlpha = .8; ctx.fillStyle = p.c;
+      ctx.beginPath();
+      ctx.moveTo(0, p.r);
+      ctx.bezierCurveTo(p.r * .7, p.r * .2, p.r * .45, -p.r * .7, 0, -p.r);
+      ctx.bezierCurveTo(-p.r * .45, -p.r * .7, -p.r * .7, p.r * .2, 0, p.r);
+      ctx.fill();
+      ctx.restore();
+    }
+  };
+  const movePetals = () => {
+    for (const p of petals) {
+      if (p.burst) { p.vy += .18; p.vx *= .99; }
+      p.x += p.vx + Math.sin(p.a) * .3; p.y += p.vy; p.a += p.va;
+      if (!p.burst && p.y > h + 20) { p.y = -20; p.x = Math.random() * w; }
+    }
+    petals = petals.filter(p => !(p.burst && p.y > h + 20));
+  };
+
+  const layout = () => { sizePetals(); sizeDrums(); if (still) { drawDrums(0); drawPetals(); } };
+  layout();
+  addEventListener('resize', layout);
+  for (let i = 0; i < 22; i++) petals.push(petal(Math.random() * w, Math.random() * h, false));
+  let angle = 0;
+  const frame = () => {
+    angle += .0007;
+    drawDrums(angle); movePetals(); drawPetals();
+    requestAnimationFrame(frame);
+  };
+  if (still) { drawDrums(0); drawPetals(); } else frame();
+  document.fonts?.ready.then(layout);
+
+  const lines = ['Anh yêu em nhiều lắm', 'Mãi là cô gái của anh', 'Cảm ơn em, vợ yêu', 'Ngày nào cũng là 20/10'];
+  let shown = 0;
+  document.getElementById('gift-btn').addEventListener('click', e => {
+    const box = e.currentTarget.getBoundingClientRect();
+    if (!still) for (let i = 0; i < 70; i++) petals.push(petal(box.left + box.width / 2, box.top, true));
+    document.getElementById('love').textContent = lines[shown++ % lines.length];
+  });
+
+  // Music box version of Pachelbel's Canon (public domain), synthesized so no audio file is needed.
+  const BASS = [50, 45, 47, 42, 43, 38, 43, 45];
+  const ARP = [[62, 66, 69, 74], [61, 64, 69, 73], [59, 62, 66, 71], [54, 57, 61, 66],
+               [55, 59, 62, 67], [54, 57, 62, 66], [55, 59, 62, 67], [57, 61, 64, 69]];
+  const TUNE = [[78, 76, 74, 73, 71, 69, 71, 73], [86, 85, 83, 81, 79, 78, 79, 76]];
+  const STEP = .4;
+  let audio, master, step = 0, nextAt = 0;
+  const note = (midi, t, len, vol, type = 'sine') => {
+    const osc = audio.createOscillator(), gain = audio.createGain();
+    osc.type = type;
+    osc.frequency.value = 440 * 2 ** ((midi - 69) / 12);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + .01);
+    gain.gain.exponentialRampToValueAtTime(.0001, t + len);
+    osc.connect(gain).connect(master);
+    osc.start(t); osc.stop(t + len + .05);
+  };
+  const schedule = () => {
+    while (nextAt < audio.currentTime + .3) {
+      const chord = (step >> 2) % 8, pos = step % 4, line = (step >> 5) % 3;
+      note(ARP[chord][pos], nextAt, 1.4, .12);
+      if (!pos) {
+        note(BASS[chord], nextAt, 1.8, .14, 'triangle');
+        if (line) note(TUNE[line - 1][chord], nextAt, 1.6, .16);
+      }
+      step++; nextAt += STEP;
+    }
+  };
+  const startMusic = () => {
+    try {
+      // Lets iPhone play sound even when the ring switch is on silent.
+      if (navigator.audioSession) navigator.audioSession.type = 'playback';
+      audio = new AudioContext();
+      master = audio.createGain();
+      master.gain.value = .5;
+      master.connect(audio.destination);
+      nextAt = audio.currentTime + .1;
+      setInterval(schedule, 100);
+      return true;
+    } catch { return false; }
+  };
+
+  const musicBtn = document.getElementById('music-btn');
+  document.getElementById('open-btn').addEventListener('click', () => {
+    document.getElementById('cover').classList.add('gone');
+    musicBtn.hidden = !startMusic();
+  });
+  musicBtn.addEventListener('click', () => {
+    const on = audio.state !== 'running';
+    on ? audio.resume() : audio.suspend();
+    musicBtn.setAttribute('aria-pressed', on);
+  });
+})();
+</script>
