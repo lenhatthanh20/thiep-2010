@@ -813,30 +813,76 @@ footer .orn { width: min(100%, 260px); }
     love.classList.remove('pop'); void love.offsetWidth; love.classList.add('pop');
   });
 
-  // Music box version of Pachelbel's Canon (public domain), synthesized so no audio file is needed.
+  // Pachelbel's Canon (public domain) on a synthesized piano with soft strings and reverb, so no audio file is needed.
   const BASS = [50, 45, 47, 42, 43, 38, 43, 45];
   const ARP = [[62, 66, 69, 74], [61, 64, 69, 73], [59, 62, 66, 71], [54, 57, 61, 66],
                [55, 59, 62, 67], [54, 57, 62, 66], [55, 59, 62, 67], [57, 61, 64, 69]];
-  const TUNE = [[78, 76, 74, 73, 71, 69, 71, 73], [86, 85, 83, 81, 79, 78, 79, 76]];
-  const STEP = .4;
-  let audio, master, step = 0, nextAt = 0;
-  const note = (midi, t, len, vol, type = 'sine') => {
-    const osc = audio.createOscillator(), gain = audio.createGain();
-    osc.type = type;
-    osc.frequency.value = 440 * 2 ** ((midi - 69) / 12);
-    gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(vol, t + .01);
-    gain.gain.exponentialRampToValueAtTime(.0001, t + len);
-    osc.connect(gain).connect(master);
-    osc.start(t); osc.stop(t + len + .05);
+  const PAD = [[62, 66, 69], [61, 64, 69], [59, 62, 66], [57, 61, 66], [55, 59, 62], [54, 57, 62], [55, 59, 62], [57, 61, 64]];
+  // One round = the 8-chord loop, 2 melody slots per chord (null = hold). Round 0 is the intro; after round 4 it loops from round 1.
+  const ROUNDS = [
+    [],
+    [78, null, 76, null, 74, null, 73, null, 71, null, 69, null, 71, null, 73, null],
+    [74, null, 73, null, 71, null, 69, null, 67, null, 66, null, 67, null, 64, null],
+    [74, 78, 81, 79, 78, 74, 78, 76, 74, 71, 74, 69, 67, 71, 69, 67],
+    [90, null, 88, null, 86, null, 85, null, 83, null, 81, null, 83, null, 85, null],
+  ];
+  const STEP = .5;
+  let audio, master, bus, step = 0, nextAt = 0;
+  const hz = midi => 440 * 2 ** ((midi - 69) / 12);
+  const piano = (midi, t, len, vol) => {
+    const out = audio.createGain();
+    out.gain.setValueAtTime(0, t);
+    out.gain.linearRampToValueAtTime(vol, t + .008);
+    out.gain.exponentialRampToValueAtTime(vol * .35, t + .4);
+    out.gain.exponentialRampToValueAtTime(.0001, t + len);
+    out.connect(bus);
+    [1, .45, .2, .1].forEach((level, i) => {
+      const osc = audio.createOscillator(), gain = audio.createGain();
+      osc.frequency.value = hz(midi) * (i + 1);
+      gain.gain.setValueAtTime(level, t);
+      // Higher partials die first, like a real piano string.
+      gain.gain.exponentialRampToValueAtTime(.001, t + len / (i * .8 + 1));
+      osc.connect(gain).connect(out);
+      osc.start(t); osc.stop(t + len + .05);
+    });
+  };
+  const strings = (midis, t, len, vol) => {
+    const out = audio.createGain(), filter = audio.createBiquadFilter();
+    filter.type = 'lowpass'; filter.frequency.value = 1100;
+    out.gain.setValueAtTime(0, t);
+    out.gain.linearRampToValueAtTime(vol, t + len * .4);
+    out.gain.linearRampToValueAtTime(0, t + len);
+    filter.connect(out).connect(bus);
+    for (const midi of midis) for (const detune of [-7, 7]) {
+      const osc = audio.createOscillator();
+      osc.type = 'sawtooth'; osc.frequency.value = hz(midi); osc.detune.value = detune;
+      osc.connect(filter); osc.start(t); osc.stop(t + len + .05);
+    }
+  };
+  const reverb = () => {
+    const length = audio.sampleRate * 3, impulse = audio.createBuffer(2, length, audio.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = impulse.getChannelData(ch);
+      for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length) ** 3;
+    }
+    const convolver = audio.createConvolver();
+    convolver.buffer = impulse;
+    return convolver;
   };
   const schedule = () => {
-    while (nextAt < audio.currentTime + .3) {
-      const chord = (step >> 2) % 8, pos = step % 4, line = (step >> 5) % 3;
-      note(ARP[chord][pos], nextAt, 1.4, .12);
+    // 1s lookahead so a throttled background tab does not leave gaps.
+    while (nextAt < audio.currentTime + 1) {
+      const chord = (step >> 2) % 8, pos = step % 4, round = step >> 5;
+      const r = round < ROUNDS.length ? round : 1 + (round - 1) % (ROUNDS.length - 1);
+      piano(ARP[chord][pos], nextAt, 2.2, .06);
       if (!pos) {
-        note(BASS[chord], nextAt, 1.8, .14, 'triangle');
-        if (line) note(TUNE[line - 1][chord], nextAt, 1.6, .16);
+        piano(BASS[chord], nextAt, 3, .1);
+        if (r >= 2) strings(PAD[chord], nextAt, 2.4, .02);
+      }
+      const melody = pos % 2 ? null : ROUNDS[r][chord * 2 + pos / 2];
+      if (melody) {
+        piano(melody, nextAt, 2.6, .12);
+        if (r === 4) piano(melody - 12, nextAt, 2.6, .06);
       }
       step++; nextAt += STEP;
     }
@@ -846,10 +892,16 @@ footer .orn { width: min(100%, 260px); }
       // Lets iPhone play sound even when the ring switch is on silent.
       if (navigator.audioSession) navigator.audioSession.type = 'playback';
       audio = new AudioContext();
+      const now = audio.currentTime, limiter = audio.createDynamicsCompressor(), wet = audio.createGain();
       master = audio.createGain();
-      master.gain.value = .5;
-      master.connect(audio.destination);
-      nextAt = audio.currentTime + .1;
+      master.gain.setValueAtTime(0, now);
+      master.gain.linearRampToValueAtTime(.7, now + 3);
+      master.connect(limiter).connect(audio.destination);
+      bus = audio.createGain();
+      wet.gain.value = .4;
+      bus.connect(master);
+      bus.connect(reverb()).connect(wet).connect(master);
+      nextAt = now + .1;
       setInterval(schedule, 100);
       return true;
     } catch { return false; }
